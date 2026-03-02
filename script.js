@@ -1,118 +1,90 @@
-let currentSlide = 0;
-let podeAvancar = false;
+// ===============================
+// ELEMENTOS
+// ===============================
 
-const slides = document.querySelectorAll(".slide");
+const startScreen = document.getElementById("startScreen");
+const mainContent = document.getElementById("mainContent");
 const music = document.getElementById("music");
-const naoBtn = document.getElementById("naoBtn");
+const slides = document.querySelectorAll(".slide");
+const btnSim = document.querySelector(".btn-sim");
+const btnNao = document.querySelector(".btn-nao");
+const respostaFinal = document.getElementById("respostaFinal");
 
-document.getElementById("mensagemFinal").innerText = CONFIG.mensagemFinal;
+let currentSlide = 0;
 
-document.getElementById("startScreen").addEventListener("click", () => {
-  document.getElementById("startScreen").style.display = "none";
-  document.getElementById("mainContent").classList.remove("hidden");
-  music.volume = 0.4;
-  music.play();
-  startParticles();
-  iniciarSlide(0);
+// ===============================
+// INICIAR EXPERIÊNCIA
+// ===============================
+
+startScreen.addEventListener("click", () => {
+  startScreen.style.display = "none";
+  mainContent.classList.remove("hidden");
+
+  music.play().catch(() => {
+    console.log("Autoplay bloqueado até interação.");
+  });
+
+  iniciarSlides();
+  iniciarTimer();
 });
 
-function iniciarSlide(index) {
-  slides.forEach(s => s.classList.remove("active"));
-  slides[index].classList.add("active");
-  podeAvancar = false;
+// ===============================
+// CONTROLE DE SLIDES (TOQUE)
+// ===============================
 
-  if (index <= 2) {
-    efeitoEscrita(slides[index].querySelector(".typewriter"), CONFIG.frases[index]);
-  } else if (slides[index].classList.contains("timer-slide")) {
-    iniciarTimer();
-    podeAvancar = true;
-  } else {
-    podeAvancar = true;
-  }
-}
+function iniciarSlides() {
+  document.addEventListener("click", (e) => {
+    if (e.target.closest(".btn-sim") || e.target.closest(".btn-nao")) return;
 
-function efeitoEscrita(el, texto) {
-  el.innerHTML = "";
-  let i = 0;
-  const intervalo = setInterval(() => {
-    el.innerHTML += texto.charAt(i);
-    i++;
-    if (i >= texto.length) {
-      clearInterval(intervalo);
-      podeAvancar = true;
+    if (currentSlide < slides.length - 1) {
+      slides[currentSlide].classList.remove("active");
+      currentSlide++;
+      slides[currentSlide].classList.add("active");
     }
-  }, 50);
+  });
 }
 
-document.addEventListener("click", () => {
-  if (!podeAvancar) return;
-  if (currentSlide < slides.length - 1) {
-    currentSlide++;
-    iniciarSlide(currentSlide);
-  }
-});
+// ===============================
+// TIMER (ALTERE A DATA AQUI)
+// ===============================
 
 function iniciarTimer() {
-  const startDate = new Date(CONFIG.dataPedido);
-  setInterval(() => {
-    const now = new Date();
-    const diff = now - startDate;
 
-    document.getElementById("days").innerText =
-      Math.floor(diff / (1000 * 60 * 60 * 24));
+  const dataInicio = new Date("2024-01-01T00:00:00"); // MUDE AQUI
+  const now = new Date();
 
-    document.getElementById("hours").innerText =
-      Math.floor((diff / (1000 * 60 * 60)) % 24);
+  const diff = now - dataInicio;
 
-    document.getElementById("minutes").innerText =
-      Math.floor((diff / (1000 * 60)) % 60);
+  const days = Math.floor(diff / (1000 * 60 * 60 * 24));
+  const hours = Math.floor((diff / (1000 * 60 * 60)) % 24);
+  const minutes = Math.floor((diff / (1000 * 60)) % 60);
+  const seconds = Math.floor((diff / 1000) % 60);
 
-    document.getElementById("seconds").innerText =
-      Math.floor((diff / 1000) % 60);
-  }, 1000);
+  document.getElementById("days").textContent = days;
+  document.getElementById("hours").textContent = String(hours).padStart(2, '0');
+  document.getElementById("minutes").textContent = String(minutes).padStart(2, '0');
+  document.getElementById("seconds").textContent = String(seconds).padStart(2, '0');
+
+  setInterval(iniciarTimer, 1000);
 }
 
-function aceitou() {
-  document.body.style.background =
-    "radial-gradient(circle at center, #1c1c52 0%, #2a2a72 100%)";
-  document.getElementById("respostaFinal").innerText =
-    "Agora começa oficialmente o nosso para sempre ❤️";
-}
+// ===============================
+// BOTÃO SIM
+// ===============================
 
-naoBtn.addEventListener("mouseover", () => {
-  naoBtn.style.left = Math.random() * 60 + "%";
-  naoBtn.style.top = Math.random() * 60 + "%";
+btnSim.addEventListener("click", () => {
+  respostaFinal.textContent = "Você acabou de me fazer a pessoa mais feliz do mundo ❤️";
 });
 
-function startParticles() {
-  const canvas = document.getElementById("bgCanvas");
-  const ctx = canvas.getContext("2d");
-  canvas.width = window.innerWidth;
-  canvas.height = window.innerHeight;
+// ===============================
+// BOTÃO NÃO (FOGE)
+// ===============================
 
-  const particles = Array.from({length: 40}, () => ({
-    x: Math.random() * canvas.width,
-    y: Math.random() * canvas.height,
-    speed: Math.random() * 0.3,
-    heart: Math.random() > 0.7
-  }));
+btnNao.addEventListener("mouseover", () => {
+  const x = Math.random() * (window.innerWidth - btnNao.offsetWidth);
+  const y = Math.random() * (window.innerHeight - btnNao.offsetHeight);
 
-  function animate() {
-    ctx.clearRect(0,0,canvas.width,canvas.height);
-    particles.forEach(p => {
-      ctx.fillStyle = "rgba(255,255,255,0.15)";
-      if (p.heart) {
-        ctx.font = "12px Arial";
-        ctx.fillText("❤️", p.x, p.y);
-      } else {
-        ctx.beginPath();
-        ctx.arc(p.x, p.y, 2, 0, Math.PI * 2);
-        ctx.fill();
-      }
-      p.y -= p.speed;
-      if (p.y < 0) p.y = canvas.height;
-    });
-    requestAnimationFrame(animate);
-  }
-  animate();
-}
+  btnNao.style.position = "absolute";
+  btnNao.style.left = `${x}px`;
+  btnNao.style.top = `${y}px`;
+});
