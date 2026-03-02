@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Nossa História</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<div class="start-screen" id="startScreen">
+  <div class="intro-text">Algumas histórias não começam por acaso...</div>
+  <div class="tap">Toque para começar</div>
+</div>
+
+<audio id="music" src="assets/musica.mp3"></audio>
+
+<div class="container hidden" id="mainContent">
+  <canvas id="bgCanvas"></canvas>
+
+  <div class="slide active">
+    <div class="photo-wrapper">
+      <img src="assets/foto1.jpg" class="photo">
+    </div>
+    <p class="typewriter"></p>
+  </div>
+
+  <div class="slide">
+    <div class="photo-wrapper">
+      <img src="assets/foto2.jpg" class="photo">
+    </div>
+    <p class="typewriter"></p>
+  </div>
+
+  <div class="slide">
+    <div class="photo-wrapper">
+      <img src="assets/foto3.jpg" class="photo">
+    </div>
+    <p class="typewriter"></p>
+  </div>
+
+  <div class="slide timer-slide">
+    <div class="timer-box">
+      <div class="big-number" id="days">0</div>
+      <div class="label">DIAS</div>
+      <div class="time-row">
+        <div>
+          <div class="small-number" id="hours">00</div>
+          <div class="label">HOR</div>
+        </div>
+        <div>
+          <div class="small-number" id="minutes">00</div>
+          <div class="label">MIN</div>
+        </div>
+        <div>
+          <div class="small-number" id="seconds">00</div>
+          <div class="label">SEG</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="slide final">
+    <h1 id="mensagemFinal"></h1>
+    <div class="buttons">
+      <button class="sim" onclick="aceitou()">SIM ❤️</button>
+      <button class="nao" id="naoBtn">NÃO</button>
+    </div>
+    <p id="respostaFinal"></p>
+  </div>
+
+</div>
+
+<script src="config.js"></script>
+<script src="script.js"></script>
+</body>
+</html>
